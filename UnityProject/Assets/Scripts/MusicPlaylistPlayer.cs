@@ -161,7 +161,9 @@ namespace TikTokLiveGame
             string[] folders =
             {
                 Path.Combine(buildRoot, "DJ_MUSIC"),
+                Path.Combine(projectRoot, "DJ_MUSIC"),
                 Path.Combine(workspaceRoot, "DJ_MUSIC"),
+                Path.Combine(projectRoot, "assets", "music"),
                 Path.Combine(workspaceRoot, "assets", "music"),
                 Application.streamingAssetsPath
             };

@@ -1,4 +1,5 @@
 using UnityEngine;
+using TikTokLiveBar;
 
 namespace TikTokLiveGame
 {
@@ -32,16 +33,18 @@ namespace TikTokLiveGame
 
             // CreateArchitecturalBackdrop(); // Hide acoustic wall and panels
 
-            Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            string path = @"D:\TIKTOK_LIVE_BAR\LiveAssets\nenamphu.png";
-            if (System.IO.File.Exists(path))
+            Texture2D tex = LoadRoomBackdrop();
+            if (tex == null)
             {
-                tex.LoadImage(System.IO.File.ReadAllBytes(path));
-                tex.filterMode = FilterMode.Trilinear;
-                tex.anisoLevel = 8;
-                tex.wrapMode = TextureWrapMode.Mirror;
+                tex = new Texture2D(2, 2, TextureFormat.RGBA32, true);
+                Color fallbackColor = new(0.025f, 0.008f, 0.025f);
+                tex.SetPixels(new[] { fallbackColor, fallbackColor, fallbackColor, fallbackColor });
                 tex.Apply();
             }
+            tex.filterMode = FilterMode.Trilinear;
+            tex.mipMapBias = -0.5f;
+            tex.anisoLevel = 8;
+            tex.wrapMode = TextureWrapMode.Mirror;
             Shader bgShader = Shader.Find("Unlit/Texture");
             if (bgShader == null) bgShader = Shader.Find("Sprites/Default");
             Material bgMat = new Material(bgShader);
@@ -109,7 +112,7 @@ namespace TikTokLiveGame
             floor.GetComponent<Renderer>().enabled = false;
 
             CreateRaisedStage();
-            // CreateDjVideoScreen();
+            CreateDjVideoScreen();
             CreateDjBooth();
             CreateDjPerformer();
             // CreateArchitecturalAccentLights();
@@ -140,6 +143,42 @@ namespace TikTokLiveGame
             AddLight("Hell Red Light", new Vector3(-6f, 7f, 1f), new Color(1f, 0.1f, 0.1f), 4.8f, 20f);
             AddLight("Hell Orange Light", new Vector3(6f, 7f, 0f), new Color(1f, 0.4f, 0f), 4.6f, 20f);
             AddLight("Stage Demon Light", new Vector3(0f, 8f, -7f), new Color(0.8f, 0f, 0.2f), 5.8f, 23f);
+        }
+
+        private static Texture2D LoadRoomBackdrop()
+        {
+            string buildRoot = System.IO.Directory.GetParent(Application.dataPath)?.FullName ?? Application.dataPath;
+            string projectRoot = System.IO.Directory.GetParent(buildRoot)?.FullName ?? buildRoot;
+            string[] candidates =
+            {
+                System.IO.Path.Combine(buildRoot, "LiveAssets", "nenamphu.png"),
+                System.IO.Path.Combine(projectRoot, "LiveAssets", "nenamphu.png"),
+                System.IO.Path.Combine(Application.streamingAssetsPath, "nenamphu.png")
+            };
+
+            foreach (string path in candidates)
+            {
+                if (!System.IO.File.Exists(path)) continue;
+                Texture2D texture = new(2, 2, TextureFormat.RGBA32, true);
+                try
+                {
+                    if (!texture.LoadImage(System.IO.File.ReadAllBytes(path), false))
+                    {
+                        UnityEngine.Object.Destroy(texture);
+                        continue;
+                    }
+                    Debug.Log($"Room backdrop loaded: {path}");
+                    return texture;
+                }
+                catch (System.Exception exception)
+                {
+                    UnityEngine.Object.Destroy(texture);
+                    Debug.LogWarning($"Room backdrop could not be loaded from '{path}': {exception.Message}");
+                }
+            }
+
+            Debug.LogWarning("Room backdrop image was not found. Using the dark fallback background.");
+            return null;
         }
 
         private static void CreateRaisedStage()
@@ -281,7 +320,6 @@ namespace TikTokLiveGame
                 l.cullingMask = -1; 
                 DiscoLight disco = obj.AddComponent<DiscoLight>();
                 disco.index = i;
-                discoLights.Add(disco);
             }
         }
 

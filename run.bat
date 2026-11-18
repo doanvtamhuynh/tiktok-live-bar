@@ -84,6 +84,8 @@ if not "%BRIDGE_PORT%"=="3000" (
     echo Bridge va Control Panel van chay tren cong %BRIDGE_PORT%, nhung game se khong duoc mo.
     goto :open_control
 )
+call "%ROOT%stage_runtime_assets.bat"
+if errorlevel 1 echo [CANH BAO] Khong chep duoc mot so file media vao Build.
 if exist "%ROOT%Build\OngChuMMO_Live.exe" (
     start "" "%ROOT%Build\OngChuMMO_Live.exe"
 ) else if exist "%ROOT%Build\TIKTOK_LIVE_BAR.exe" (

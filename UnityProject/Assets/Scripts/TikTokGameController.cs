@@ -26,6 +26,7 @@ namespace TikTokLiveGame
         private readonly List<Light> environmentLights = new();
         private bool stylesReady;
         private GUIStyle panelStyle;
+        private Texture2D buttonHover;
         private GUIStyle titleStyle;
         private GUIStyle labelStyle;
         private GUIStyle smallStyle;
@@ -332,7 +333,7 @@ namespace TikTokLiveGame
             stylesReady = true;
             Texture2D panel = Solid(new Color(0.018f, 0.018f, 0.055f, 0.91f));
             Texture2D button = Solid(new Color(0.14f, 0.08f, 0.28f, 0.98f));
-            Texture2D buttonHover = Solid(new Color(0.08f, 0.45f, 0.62f, 1f));
+            buttonHover = Solid(new Color(0.08f, 0.45f, 0.62f, 1f));
             Texture2D input = Solid(new Color(0.01f, 0.01f, 0.025f, 0.98f));
             energyBack = Solid(new Color(0.05f, 0.05f, 0.12f, 0.95f));
             energyFill = Solid(new Color(0.1f, 0.9f, 1f, 1f));
